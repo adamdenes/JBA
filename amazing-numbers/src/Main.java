@@ -1,7 +1,6 @@
 package numbers;
 
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static numbers.MyNumber.gatherProperties;
 
@@ -48,22 +47,12 @@ public class Main {
 
                         processProperties(numbers);
                     }
-                    case 3 -> {
-                        num = Long.parseLong(input.getNextInput());
-                        numTwo = Long.parseLong(input.getNextInput());
-                        n = new MyNumber(num);
-                        String property = input.getNextInput();
-
-                        processProperties(n, numTwo, property);
-                    }
                     default -> {
                         num = Long.parseLong(input.getNextInput());
                         numTwo = Long.parseLong(input.getNextInput());
                         n = new MyNumber(num);
-                        String property = input.getNextInput();
-                        String property2 = input.getNextInput();
 
-                        processProperties(n, numTwo, property, property2);
+                        processProperties(n, numTwo, input.getProperties());
                     }
                 }
             } catch (MyNeturalNumberException | MyInputPropertyException e) {
@@ -72,34 +61,30 @@ public class Main {
         } while (true);
     }
 
-    public static void processProperties(MyNumber num, long len, String property, String property2) {
+    public static void processProperties(MyNumber num, long len, String... properties) {
         int propCount = 0;
         System.out.println();
         StringBuilder sb = new StringBuilder();
 
         while (propCount < len) {
             sb.append(gatherProperties(num));
-            if (sb.toString().contains(property) && sb.toString().contains(property2)) {
+            String[] results = gatherProperties(num).split(", ");
+            Arrays.sort(results);
+
+            int counter = 0;
+            for (String result : results) {
+                for (String property : properties) {
+                    if (Objects.equals(result, property)) {
+                        counter++;
+                    }
+                }
+            }
+
+            if (counter == properties.length) {
                 System.out.println("\t\t\t   " + num.getNum() + " is " + sb);
                 propCount++;
             }
             sb.delete(0, sb.length());
-            num.setNum(num.getNum() + 1);
-        }
-
-        System.out.println();
-    }
-
-    public static void processProperties(MyNumber num, long len, String property) {
-        int propCount = 0;
-        System.out.println();
-
-        while (propCount < len) {
-            String s = gatherProperties(num);
-                if (s.contains(property.toLowerCase())) {
-                    System.out.println("\t\t\t   " + num.getNum() + " is " + s);
-                    propCount++;
-                }
             num.setNum(num.getNum() + 1);
         }
 
@@ -123,8 +108,7 @@ public class Main {
                 - enter two natural numbers to obtain the properties of the list:
                   * the first parameter represents a starting number;
                   * the second parameter shows how many consecutive numbers are to be printed;
-                - two natural numbers and a property to search for;
-                - two natural numbers and two properties to search for;
+                - two natural numbers and properties to search for;
                 - separate the parameters with one space;
                 - enter 0 to exit.
                 """;
