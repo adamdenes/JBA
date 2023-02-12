@@ -36,47 +36,49 @@ public enum Property {
         String[] result = new String[2];
         Property next;
 
-        for (int i = 0; i < properties.length; i++) {
-            if (i + 1 >= properties.length) {
-                break;
-            }
-            next = Property.valueOf(properties[i + 1].toUpperCase());
+        for (String s : properties) {
+            for (String property : properties) {
+                if (property.equals(s)) {
+                    continue;
+                }
 
-            switch (Property.valueOf(properties[i].toUpperCase())) {
-                case EVEN -> {
-                    if (next == ODD) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                next = Property.valueOf(property.toUpperCase());
+                switch (Property.valueOf(s.toUpperCase())) {
+                    case EVEN -> {
+                        if (next == ODD) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
-                }
-                case ODD -> {
-                    if (next == EVEN) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                    case ODD -> {
+                        if (next == EVEN) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
-                }
-                case DUCK -> {
-                    if (next == SPY) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                    case DUCK -> {
+                        if (next == SPY) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
-                }
-                case SPY -> {
-                    if (next == DUCK) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                    case SPY -> {
+                        if (next == DUCK) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
-                }
-                case SQUARE -> {
-                    if (next == SUNNY) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                    case SQUARE -> {
+                        if (next == SUNNY) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
-                }
-                case SUNNY -> {
-                    if (next == SQUARE) {
-                        result[i] = Property.valueOf(properties[i].toUpperCase()).name();
-                        result[i + 1] = next.name();
+                    case SUNNY -> {
+                        if (next == SQUARE) {
+                            result[0] = s.toUpperCase();
+                            result[1] = next.name();
+                        }
                     }
                 }
             }
