@@ -1,9 +1,9 @@
 package numbers;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+
+import static numbers.MyNumber.gatherProperties;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,34 +13,33 @@ public class Main {
         MyNumber[] numbers;
         MyNumber n;
 
-        String[] input;
         do {
             System.out.print("Enter a request: ");
-            input = sc.nextLine().split(" ");
+            Input input = new Input(sc.nextLine().toLowerCase().split(" "));
 
-            if ("".equals(input[0])) {
+            if (input.isEmpty()) {
                 printHelper();
                 continue;
             }
+            if (Objects.equals(input.getNext(), "0")) {
+                System.out.println("\nGoodbye!");
+                break;
+            }
 
             try {
-                MyNumber.validate(input);
+                Input.validate(input.inputs);
+                MyNumber.validate(input.inputs);
+                long num, numTwo;
 
-                long num = Long.parseLong(input[0]);
-                long numTwo;
-
-                if (num == 0) {
-                    System.out.println("\nGoodbye!");
-                    break;
-                }
-
-                switch (input.length) {
+                switch (input.inputs.length) {
                     case 1 -> {
+                        num = Long.parseLong(input.getNextInput());
                         n = new MyNumber(num);
                         System.out.println(n);
                     }
                     case 2 -> {
-                        numTwo = Long.parseLong(input[1]);
+                        num = Long.parseLong(input.getNextInput());
+                        numTwo = Long.parseLong(input.getNextInput());
                         numbers = new MyNumber[Math.abs((int) numTwo)];
 
                         for (int i = 0; i < numbers.length; i++) {
@@ -49,37 +48,62 @@ public class Main {
 
                         processProperties(numbers);
                     }
-                    default -> {
-                        numTwo = Long.parseLong(input[1]);
-                        String property = input[2];
-
-                        if (!isProperty(property)) {
-                            printHelper(property);
-                            continue;
-                        }
-
+                    case 3 -> {
+                        num = Long.parseLong(input.getNextInput());
+                        numTwo = Long.parseLong(input.getNextInput());
                         n = new MyNumber(num);
-                        int propCount = 0;
-                        System.out.println();
-                        while (propCount < numTwo) {
-                            List<String> stringList = gatherProperties(n);
-                            String s = String.join(", ", stringList);
+                        String property = input.getNextInput();
 
-                            for (String sl : stringList) {
-                                if (Objects.equals(sl.toUpperCase(), property)) {
-                                    System.out.println("\t\t\t   " + n.getNum() + " is " + s);
-                                    propCount++;
-                                }
-                            }
-                            n.setNum(n.getNum() + 1);
-                        }
-                        System.out.println();
+                        processProperties(n, numTwo, property);
+                    }
+                    default -> {
+                        num = Long.parseLong(input.getNextInput());
+                        numTwo = Long.parseLong(input.getNextInput());
+                        n = new MyNumber(num);
+                        String property = input.getNextInput();
+                        String property2 = input.getNextInput();
+
+                        processProperties(n, numTwo, property, property2);
                     }
                 }
-            } catch (MyNeturalNumberException e) {
+            } catch (MyNeturalNumberException | MyInputPropertyException e) {
                 System.out.println(e.getMessage());
             }
         } while (true);
+    }
+
+    public static void processProperties(MyNumber num, long len, String property, String property2) {
+        int propCount = 0;
+        System.out.println();
+        StringBuilder sb = new StringBuilder();
+
+        while (propCount < len) {
+            sb.append(gatherProperties(num));
+            if (sb.toString().contains(property) && sb.toString().contains(property2)) {
+                System.out.println("\t\t\t   " + num.getNum() + " is " + sb);
+                propCount++;
+            }
+            sb.delete(0, sb.length());
+            num.setNum(num.getNum() + 1);
+        }
+
+        System.out.println();
+    }
+
+    public static void processProperties(MyNumber num, long len, String property) {
+        int propCount = 0;
+        System.out.println();
+
+        while (propCount < len) {
+            String s = gatherProperties(num);
+                if (s.contains(property.toLowerCase())) {
+                    System.out.println("\t\t\t   " + num.getNum() + " is " + s);
+                    propCount++;
+                }
+            num.setNum(num.getNum() + 1);
+        }
+
+        System.out.println();
     }
 
     public static void processProperties(MyNumber[] numbers) {
@@ -89,25 +113,6 @@ public class Main {
             System.out.println("\t\t\t   " + number.getNum() + " is " + s);
         }
         System.out.println();
-    }
-
-    public static boolean isProperty(String property) {
-        String[] properties = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY"};
-        for (String p : properties) {
-            if (Objects.equals(p, property.toUpperCase())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static void printHelper(String property) {
-        String help = String.format("""
-                                
-                The property [%s] is wrong.
-                Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-                """, property.toUpperCase());
-        System.out.println(help);
     }
 
     public static void printHelper() {
@@ -124,39 +129,5 @@ public class Main {
                 - enter 0 to exit.
                 """;
         System.out.println(help);
-    }
-
-    public static List<String> gatherProperties(MyNumber num) {
-        List<String> properties = new ArrayList<>();
-
-        if (num.isBuzz()) {
-            properties.add("buzz");
-        }
-        if (num.isDuck()) {
-            properties.add("duck");
-        }
-        if (num.isPalindromic()) {
-            properties.add("palindromic");
-        }
-        if (num.isGapful()) {
-            properties.add("gapful");
-        }
-        if (num.isSpy()) {
-            properties.add("spy");
-        }
-        if (num.isSquare()) {
-            properties.add("square");
-        }
-        if (num.isSunny()) {
-            properties.add("sunny");
-        }
-        if (num.isEven()) {
-            properties.add("even");
-        }
-        if (num.isOdd()) {
-            properties.add("odd");
-        }
-
-        return properties;
     }
 }
