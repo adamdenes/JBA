@@ -9,9 +9,14 @@ import static numbers.Property.isProperty;
 public class Input {
     String next;
     String[] inputs;
+    String[] properties;
 
     public Input(String... inputs) {
         this.inputs = inputs;
+        if (inputs.length > 2) {
+            this.properties = new String[inputs.length - 2];
+            System.arraycopy(inputs, 2, this.properties, 0, inputs.length - 2);
+        }
         this.next = this.inputs[0];
     }
 
@@ -19,7 +24,6 @@ public class Input {
         if (in.length < 2) {
             return;
         }
-
         String help;
         List<String> invalidList = new ArrayList<>();
 
@@ -33,17 +37,6 @@ public class Input {
         }
 
         switch (invalidList.size()) {
-            case 0 -> {
-                String[] exclusive = Property.getMutuallyExclusive(afterNumbers);
-                if (exclusive.length >= 2 && exclusive[0] != null) {
-                    help = String.format("""
-                        
-                    The request contains mutually exclusive properties: %s
-                    There are no numbers with these properties.
-                    """, Arrays.toString(exclusive));
-                    throw new MyInputPropertyException(help);
-                }
-            }
             case 1 -> {
                 help = String.format("""
 
@@ -60,11 +53,26 @@ public class Input {
                         """, Arrays.toString(invalidList.toArray()).toUpperCase(), Arrays.toString(Property.values()));
                 throw new MyInputPropertyException(help);
             }
+            default -> {
+                String[] exclusive = Property.getMutuallyExclusive(afterNumbers);
+                if (exclusive.length >= 2 && exclusive[0] != null) {
+                    help = String.format("""
+                                
+                            The request contains mutually exclusive properties: %s
+                            There are no numbers with these properties.
+                            """, Arrays.toString(exclusive));
+                    throw new MyInputPropertyException(help);
+                }
+            }
         }
     }
 
     public boolean isEmpty() {
         return this.inputs == null || "".equals(this.inputs[0]);
+    }
+
+    public String[] getProperties() {
+        return properties;
     }
 
     public String getNext() {
