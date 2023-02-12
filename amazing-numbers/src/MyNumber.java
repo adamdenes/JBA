@@ -115,6 +115,21 @@ class MyNumber {
         return false;
     }
 
+    private boolean isJumping() {
+        String num = String.valueOf(this.num);
+        if (num.length() == 1) {
+            return true;
+        }
+        for (int i = 0; i < num.length(); i++) {
+            if (i + 1 < num.length()) {
+                if (Math.abs((long) num.charAt(i) - (long) num.charAt(i + 1)) != 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     protected boolean isSpy() {
         return this.sum() == this.product();
     }
@@ -144,7 +159,28 @@ class MyNumber {
 
     @Override
     public String toString() {
-        return new StringBuilder("\nProperties of ").append(this.num).append("\n\t\tbuzz: ").append(this.isBuzz()).append("\n\t\tduck: ").append(this.isDuck()).append("\n palindromic: ").append(this.isPalindromic()).append("\n\t  gapful: ").append(this.isGapful()).append("\n\t\t spy: ").append(this.isSpy()).append("\n\t  square: ").append(this.isSquare()).append("\n\t   sunny: ").append(this.isSunny()).append("\n\t\teven: ").append(this.isEven()).append("\n\t\t odd: ").append(this.isOdd())
+        return new StringBuilder("\nProperties of ")
+                .append(this.num)
+                .append("\n\t\tbuzz: ")
+                .append(this.isBuzz())
+                .append("\n\t\tduck: ")
+                .append(this.isDuck())
+                .append("\n palindromic: ")
+                .append(this.isPalindromic())
+                .append("\n\t  gapful: ")
+                .append(this.isGapful())
+                .append("\n\t\t spy: ")
+                .append(this.isSpy())
+                .append("\n\t  square: ")
+                .append(this.isSquare())
+                .append("\n\t   sunny: ")
+                .append(this.isSunny())
+                .append("\n\t jumping: ")
+                .append(this.isJumping())
+                .append("\n\t\teven: ")
+                .append(this.isEven())
+                .append("\n\t\t odd: ")
+                .append(this.isOdd())
                 .append("\n").toString();
     }
 
@@ -171,6 +207,9 @@ class MyNumber {
         }
         if (num.isSunny()) {
             properties.append("sunny, ");
+        }
+        if (num.isJumping()) {
+            properties.append("jumping, ");
         }
         if (num.isEven()) {
             properties.append("even, ");
