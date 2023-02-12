@@ -1,7 +1,10 @@
 package numbers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
+
+import static numbers.Property.isProperty;
 
 public class Input {
     String next;
@@ -13,69 +16,51 @@ public class Input {
     }
 
     public static void validate(String... in) throws MyInputPropertyException {
+        if (in.length < 2) {
+            return;
+        }
+
         String help;
+        List<String> invalidList = new ArrayList<>();
 
-        if (in.length == 3) {
-            if (!isProperty(in[2])) {
+        String[] afterNumbers = new String[in.length - 2];
+        System.arraycopy(in, 2, afterNumbers, 0, in.length - 2);
+
+        for (String property : afterNumbers) {
+            if (!isProperty(property)) {
+                invalidList.add(property);
+            }
+        }
+
+        switch (invalidList.size()) {
+            case 0 -> {
+                String[] exclusive = Property.getMutuallyExclusive(afterNumbers);
+                if (exclusive.length >= 2 && exclusive[0] != null) {
+                    help = String.format("""
+                        
+                    The request contains mutually exclusive properties: %s
+                    There are no numbers with these properties.
+                    """, Arrays.toString(exclusive));
+                    throw new MyInputPropertyException(help);
+                }
+            }
+            case 1 -> {
                 help = String.format("""
-                                        
-                        The property [%s] is wrong.
-                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-                        """, in[2].toUpperCase());
+
+                        The property %s is wrong.
+                        Available properties: %s
+                        """, Arrays.toString(invalidList.toArray()).toUpperCase(), Arrays.toString(Property.values()));
                 throw new MyInputPropertyException(help);
             }
-        } else if (in.length == 4) {
-            if (!isProperty(in[2]) && !isProperty(in[1])) {
-                help = String.format("""
-                                        
-                        The properties [%s, %s] are wrong.
-                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-                        """, in[2].toUpperCase(), in[3].toUpperCase());
-                throw new MyInputPropertyException(help);
-            }
-
-            if (!isProperty(in[2])) {
-                help = String.format("""
-                                        
-                        The property [%s] is wrong.
-                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-                        """, in[2].toUpperCase());
-                throw new MyInputPropertyException(help);
-            } else if (!isProperty(in[3])) {
-                help = String.format("""
-                                        
-                        The property [%s] is wrong.
-                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-                        """, in[3].toUpperCase());
-                throw new MyInputPropertyException(help);
-            }
-
-            if (
-                    (in[2].equals("sunny") || in[2].equals("square") && in[3].equals("sunny") || in[3].equals("square")) ||
-                            (in[2].equals("odd") || in[2].equals("even") && in[3].equals("odd") || in[3].equals("even")) ||
-                            (in[2].equals("spy") || in[2].equals("duck") && in[3].equals("spy") || in[3].equals("duck"))
-            ) {
+            case 2 -> {
                 help = String.format("""
 
-                        The request contains mutually exclusive properties: [%s, %s]
-                        There are no numbers with these properties.
-                        """, in[2].toUpperCase(), in[3].toUpperCase());
+                        The properties %s are wrong.
+                        Available properties: %s
+                        """, Arrays.toString(invalidList.toArray()).toUpperCase(), Arrays.toString(Property.values()));
                 throw new MyInputPropertyException(help);
             }
         }
-    }
-
-    public static boolean isProperty(String property) {
-        String[] properties = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY"};
-        for (String p : properties) {
-            if (property == null) {
-                continue;
-            }
-            if (Objects.equals(p, property.toUpperCase())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isEmpty() {
