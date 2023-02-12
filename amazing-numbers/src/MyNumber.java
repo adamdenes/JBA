@@ -1,6 +1,5 @@
 package numbers;
 
-
 class MyNumber {
     private long num;
 
@@ -28,7 +27,8 @@ class MyNumber {
                 } catch (NumberFormatException e) {
                     throw new MyNeturalNumberException("\nThe first parameter should be a natural number or zero.\n");
                 }
-            } case 2 -> {
+            }
+            case 2 -> {
                 try {
                     num2 = Long.parseLong(input[1]);
                     if (num2 < 0) {
@@ -62,7 +62,7 @@ class MyNumber {
     }
 
     protected boolean isDuck() {
-        return String.valueOf(this.num).contains("0") && String.valueOf(this.num).indexOf("0") != 0;
+        return String.valueOf(this.num).contains("0") && String.valueOf(this.num).charAt(0) != '0';
     }
 
     protected boolean isGapful() {
@@ -90,10 +90,28 @@ class MyNumber {
     }
 
     protected boolean isSquare() {
-        return false;
+        if (this.num < 0) {
+            return false;
+        }
+
+        switch ((int) (this.num & 0xF)) {
+            case 0, 1, 4, 9 -> {
+                long tst = (long) Math.sqrt(this.num);
+                return tst * tst == this.num;
+            }
+            default -> {
+                return false;
+            }
+        }
     }
 
     protected boolean isSunny() {
+        this.num += 1;
+        if (this.isSquare()) {
+            this.num -= 1;
+            return true;
+        }
+        this.num -= 1;
         return false;
     }
 
@@ -126,16 +144,41 @@ class MyNumber {
 
     @Override
     public String toString() {
-        return String.format("\nProperties of " + this.num +
-                "\n\t\tbuzz: " + this.isBuzz() +
-                "\n\t\tduck: " + this.isDuck()) +
-                "\n palindromic: " + this.isPalindromic() +
-                "\n\t  gapful: " + this.isGapful() +
-                "\n\t\t spy: " + this.isSpy() +
-                "\n\t  square: " + this.isSquare() +
-                "\n\t   sunny: " + this.isSunny() +
-                "\n\t\teven: " + this.isEven() +
-                "\n\t\t odd: " + this.isOdd() +
-                "\n";
+        return new StringBuilder("\nProperties of ").append(this.num).append("\n\t\tbuzz: ").append(this.isBuzz()).append("\n\t\tduck: ").append(this.isDuck()).append("\n palindromic: ").append(this.isPalindromic()).append("\n\t  gapful: ").append(this.isGapful()).append("\n\t\t spy: ").append(this.isSpy()).append("\n\t  square: ").append(this.isSquare()).append("\n\t   sunny: ").append(this.isSunny()).append("\n\t\teven: ").append(this.isEven()).append("\n\t\t odd: ").append(this.isOdd())
+                .append("\n").toString();
+    }
+
+    public static String gatherProperties(MyNumber num) {
+        StringBuilder properties = new StringBuilder();
+
+        if (num.isBuzz()) {
+            properties.append("buzz, ");
+        }
+        if (num.isDuck()) {
+            properties.append("duck, ");
+        }
+        if (num.isPalindromic()) {
+            properties.append("palindromic, ");
+        }
+        if (num.isGapful()) {
+            properties.append("gapful, ");
+        }
+        if (num.isSpy()) {
+            properties.append("spy, ");
+        }
+        if (num.isSquare()) {
+            properties.append("square, ");
+        }
+        if (num.isSunny()) {
+            properties.append("sunny, ");
+        }
+        if (num.isEven()) {
+            properties.append("even, ");
+        }
+        if (num.isOdd()) {
+            properties.append("odd, ");
+        }
+
+        return properties.delete(properties.length() - 2, properties.length()).toString();
     }
 }
