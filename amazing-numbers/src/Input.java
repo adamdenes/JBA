@@ -55,7 +55,7 @@ public class Input {
             }
             default -> {
                 String[] exclusive = Property.getMutuallyExclusive(afterNumbers);
-                if (exclusive.length >= 2 && exclusive[0] != null) {
+                if (exclusive[0] != null) {
                     help = String.format("""
                                 
                             The request contains mutually exclusive properties: %s
