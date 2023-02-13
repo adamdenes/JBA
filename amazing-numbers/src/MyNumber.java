@@ -115,7 +115,7 @@ class MyNumber {
         return false;
     }
 
-    private boolean isJumping() {
+    protected boolean isJumping() {
         String num = String.valueOf(this.num);
         if (num.length() == 1) {
             return true;
@@ -130,8 +130,32 @@ class MyNumber {
         return true;
     }
 
+    protected boolean isHappy() {
+        long result = this.serialize(this.num);
+        return result == 1;
+    }
+
+    protected boolean isSad() {
+        return !this.isHappy();
+    }
+
     protected boolean isSpy() {
         return this.sum() == this.product();
+    }
+
+    private long serialize(long num) {
+        long res = 0, rem;
+        while (num > 0) {
+            rem = num % 10;
+            res += Math.pow(rem, 2);
+            num /= 10;
+        }
+
+        if (res != 1 && res != 4) {
+            return serialize(res);
+        }
+
+        return res;
     }
 
     private int product() {
@@ -177,6 +201,10 @@ class MyNumber {
                 .append(this.isSunny())
                 .append("\n\t jumping: ")
                 .append(this.isJumping())
+                .append("\n\t   happy: ")
+                .append(this.isHappy())
+                .append("\n\t\t sad: ")
+                .append(this.isSad())
                 .append("\n\t\teven: ")
                 .append(this.isEven())
                 .append("\n\t\t odd: ")
@@ -210,6 +238,12 @@ class MyNumber {
         }
         if (num.isJumping()) {
             properties.append("jumping, ");
+        }
+        if (num.isHappy()) {
+            properties.append("happy, ");
+        }
+        if (num.isSad()) {
+            properties.append("sad, ");
         }
         if (num.isEven()) {
             properties.append("even, ");
