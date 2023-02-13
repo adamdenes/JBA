@@ -1,6 +1,8 @@
 package numbers;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Scanner;
 
 import static numbers.MyNumber.gatherProperties;
 
@@ -67,20 +69,13 @@ public class Main {
         StringBuilder sb = new StringBuilder();
 
         while (propCount < len) {
-            sb.append(gatherProperties(num));
-            String[] results = gatherProperties(num).split(", ");
+            String s = gatherProperties(num);
+            sb.append(s);
+            String[] results = s.split(", ");
             Arrays.sort(results);
+            Arrays.sort(properties);
 
-            int counter = 0;
-            for (String result : results) {
-                for (String property : properties) {
-                    if (Objects.equals(result, property)) {
-                        counter++;
-                    }
-                }
-            }
-
-            if (counter == properties.length) {
+            if (filter(results, properties)) {
                 System.out.println("\t\t\t   " + num.getNum() + " is " + sb);
                 propCount++;
             }
@@ -100,15 +95,33 @@ public class Main {
         System.out.println();
     }
 
+    public static boolean filter(String[] results, String[] properties) {
+        int filters = (int) Arrays.stream(properties).filter(s -> s.startsWith("-")).count();
+        int trueCount = 0;
+        for (String result : results) {
+            for (String property : properties) {
+                if (Property.isFilter(property) && Objects.equals(result, property.replace("-", ""))) {
+                    return false;
+                }
+                if (!Property.isFilter(property) && Objects.equals(result, property)) {
+                    trueCount++;
+                }
+            }
+        }
+
+        return trueCount == properties.length - filters;
+    }
+
     public static void printHelper() {
         String help = """ 
-                                
+                                                
                 Supported requests:
                 - enter a natural number to know its properties;
                 - enter two natural numbers to obtain the properties of the list:
                   * the first parameter represents a starting number;
                   * the second parameter shows how many consecutive numbers are to be printed;
                 - two natural numbers and properties to search for;
+                - a property preceded by minus must not be present in numbers;
                 - separate the parameters with one space;
                 - enter 0 to exit.
                 """;
